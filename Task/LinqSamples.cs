@@ -35,7 +35,8 @@ namespace SampleQueries
 	    {
             decimal X = 104000;
 
-	        var customers = dataSource.Customers.Where(cust => cust.Orders.Select(ord => ord.Total).Sum() > X);
+	        var customers = dataSource.Customers
+	            .Where(cust => cust.Orders.Select(ord => ord.Total).Sum() > X);
 
 	        foreach (var cust in customers)
 	        {
@@ -51,7 +52,8 @@ namespace SampleQueries
 	    {
             // without group
 	        var customers =
-	            dataSource.Customers.Select(cust =>
+	            dataSource.Customers
+	                .Select(cust =>
 	                new
 	                {
 	                    Cust = cust,
@@ -60,10 +62,11 @@ namespace SampleQueries
 	                });
 
             // with group
-	        var grcustomer = dataSource.Customers.GroupJoin(
+	        var grcustomer = dataSource.Customers
+	            .GroupJoin(
 	                dataSource.Suppliers,
-	                cust => new{cust.City, cust.Country},
-	                supl => new{supl.City, supl.Country},
+	                cust => new { cust.City, cust.Country },
+	                supl => new { supl.City, supl.Country },
 	                (x, y) => new { cust = x, supls = y });
 
             foreach (var cust in customers)
@@ -94,7 +97,8 @@ namespace SampleQueries
 	    {
 	        decimal X = 15000;
 
-	        var customers = dataSource.Customers.Where(cust => cust.Orders.Any(ord => ord.Total > X));
+	        var customers = dataSource.Customers
+	            .Where(cust => cust.Orders.Any(ord => ord.Total > X));
 
 	        foreach (var cust in customers)
 	        {
@@ -104,7 +108,7 @@ namespace SampleQueries
 	                ObjectDumper.Write(ord);
 	            }
             }
-            }
+        }
 
 	    [Category("Mentoring program Task3")]
 	    [Title("Where - Task 004")]
@@ -140,9 +144,9 @@ namespace SampleQueries
 	                cust.Orders.Select(o => o.OrderDate).Min().Year,
 	                cust.CompanyName,
                     TotalSum = cust.Orders.Select(o => o.Total).Sum()
-	            }).ToList()
+	            })
 	            .OrderBy(c =>  c.Year)
-	            .ThenBy( c=> c.Month)
+	            .ThenBy( c => c.Month)
 	            .ThenByDescending(c => c.TotalSum)
 	            .ThenBy(c => c.CompanyName);
 	        foreach (var cust in customers)
@@ -181,11 +185,14 @@ namespace SampleQueries
 	            .Select(gprod => new
 	            {
 	                Category = gprod.Key,
-	                Products = gprod.GroupBy(pr => pr.UnitsInStock).Select(p => new
-	                {
-	                    InStock = p.Key,
-	                    Products = p.OrderBy(_=>_.UnitPrice)
-	                })
+	                Products = gprod
+	                    .GroupBy(pr => pr.UnitsInStock)
+	                    .Select(p => new
+	                    {
+	                        InStock = p.Key,
+	                        Products = p.OrderBy(_=>_.UnitPrice)
+
+	                    })
 	            });
 
 	        foreach (var prod in products)
@@ -211,7 +218,11 @@ namespace SampleQueries
 	    {
             var products = dataSource.Products.GroupBy(prod => prod.UnitPrice < 10 ? "cheap" :
                 prod.UnitPrice > 60 ? "expensive" : "average")
-                .Select(_ => new{ Type= _.Key, Prods = _ });
+                .Select(_ => new
+                {
+                    Type = _.Key,
+                    Prods = _
+                });
 
             foreach (var prod in products)
             {
@@ -258,7 +269,7 @@ namespace SampleQueries
 	                .Select(_ => new
 	                {
 	                    Month = _.Key,
-	                    Activity = 1.0*_.Count()/_.GroupBy(or=>or.OrderDate.Year).Count()
+	                    Activity = 1.0 * _.Count() / _.GroupBy(or=>or.OrderDate.Year).Count()
 	                })
 	        });
 	        foreach (var cStat in custMonthStat)
