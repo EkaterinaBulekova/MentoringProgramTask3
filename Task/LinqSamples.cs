@@ -186,7 +186,7 @@ namespace SampleQueries
 	            {
 	                Category = gprod.Key,
 	                Products = gprod
-	                    .GroupBy(pr => pr.UnitsInStock)
+	                    .GroupBy(pr => pr.UnitsInStock > 0)
 	                    .Select(p => new
 	                    {
 	                        InStock = p.Key,
@@ -269,8 +269,8 @@ namespace SampleQueries
 	                .Select(_ => new
 	                {
 	                    Month = _.Key,
-	                    Activity = 1.0 * _.Count() / _.GroupBy(or=>or.OrderDate.Year).Count()
-	                })
+	                    Activity = _.GroupBy(or=>or.OrderDate.Year).Select(m => m.Count()).Average()
+                  })
 	        });
 	        foreach (var cStat in custMonthStat)
 	        {
